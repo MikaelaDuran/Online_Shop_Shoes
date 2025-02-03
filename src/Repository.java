@@ -1,6 +1,4 @@
-import models.Customer;
-import models.Item;
-import models.Product;
+import models.*;
 
 import java.io.FileInputStream;
 import java.sql.*;
@@ -11,6 +9,7 @@ import java.util.Properties;
 public class Repository {
 
     private Properties p = new Properties();
+
 
     public Repository() {
 
@@ -86,10 +85,10 @@ public class Repository {
         }
 
 
-        public List<Item> getItem (int productId) {
+        public List<Item> getItemInStock (int productId) {
         List<Item> itemList = new ArrayList<>();
 
-        String query = "SELECT * FROM Item WHERE productId= ?";
+        String query = "SELECT * FROM Item WHERE productId=? AND stock>0";
 
             try (Connection con = DriverManager.getConnection(
                     p.getProperty("connection"),
@@ -109,8 +108,10 @@ public class Repository {
                     int size = rs.getInt("size");
                     int stock = rs.getInt("stock");
 
+
                     Item item = new Item(id,productID,colour,size,stock);
                     itemList.add(item);
+
                 }
 
             } catch (SQLException e) {
@@ -119,7 +120,47 @@ public class Repository {
 
             return itemList;
         }
+
+
+        public Orders checkIfActiveOrderId (int customerId){
+            // endast 1 active order per person = LIMIT 1
+            String query = "SELECT * FROM Orders WHERE customerId = ? AND orderStatus= 'active' LIMIT 1";
+
+
+            try (Connection con = DriverManager.getConnection(
+                    p.getProperty("connection"),
+                    p.getProperty("username"),
+                    p.getProperty("password"));
+                 PreparedStatement stmt = con.prepareStatement(query))
+
+            {
+
+                stmt.setInt(1,customerId);
+                ResultSet rs = stmt.executeQuery();
+
+
+                if (rs.next()) {
+                    Orders order = new Orders();
+
+                    order.setId(rs.getInt("id"));
+                    order.setCustomerId(rs.getInt("customerID"));
+                    order.setOrderCreateDate(rs.getTimestamp("orderDate").toLocalDateTime());
+                    order.setOrderUpdateDate(rs.getTimestamp("updatedOrder").toLocalDateTime());
+                    order.setStatus(rs.getString("orderStatus"));
+
+                    return order; // Returnera order om den finns
+                }
+
+            } catch (SQLException e) {
+                throw new RuntimeException("Felmeddelande! Kunde inte hämta order.", e);
+            }
+
+            return null; // Om ingen order hittades, returnera null
+        }
+
 }
+
+
 
 
 

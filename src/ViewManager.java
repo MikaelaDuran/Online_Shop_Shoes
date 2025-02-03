@@ -1,7 +1,6 @@
-import models.Customer;
-import models.Item;
-import models.Product;
+import models.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,10 +8,32 @@ public class ViewManager {
 
     Repository r = new Repository();
     Scanner scanner = new Scanner(System.in);
-    ViewManager() {
+    CartRepository rc = new CartRepository();
 
+    // Deklarera utanför metoderna för att kunna använda i andra klasser
+    private int customerId;
+    private int itemId;
+    private int orderId;
+    private int productId;
+
+
+        public void Meny(){
+            System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Betala \n4.Logga ut" +
+                    "\n Välj ett alternativ:");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1: ProductView();
+                    break;
+                case 2: CartItemsView(customerId);
+                    break;
+                case 3:
+                    System.out.println("BETALA");
+                    break;
+                case 4:
+                    System.out.println("LOGGA UT");
+                    break;
+            }
         }
-
         public void LoginView(){
 
         System.out.println("Välkommen till Online-shoppen för skor!");
@@ -25,6 +46,7 @@ public class ViewManager {
         Customer customer = r.authenticateCustomer(usernameInput, passwordInput);
 
         if (customer != null) {
+            customerId = customer.getId(); // TODO: Spara inloggad kunds ID
             System.out.println("Välkommen " + customer.getFirstName() + "!");
             ProductView();
         }
@@ -65,7 +87,7 @@ public class ViewManager {
 
             if (selectedProduct != null) {
                 // Skickar produktens ID till ItemView
-                ItemView(selectedProduct.getId());
+                ItemView(productId = selectedProduct.getId());
             } else {
                 System.out.println("Produkt hittades inte!");
             }
@@ -73,7 +95,7 @@ public class ViewManager {
 
         public void ItemView(int productId){
 
-        List<Item> itemList = r.getItem(productId);
+        List<Item> itemList = r.getItemInStock(productId);
 
             System.out.println("\n-------------------------------------------------------------");
             System.out.printf("| %-20s | %-15s | %-10s |\n", "Storlek", "Färg", "Lager");
@@ -85,12 +107,49 @@ public class ViewManager {
             }
 
             System.out.println("-------------------------------------------------------------");
-            System.out.print("Välj storlek: ");
-            String selectedSize = scanner.nextLine().trim();
             System.out.print("Välj färg: ");
             String selectedColour = scanner.nextLine().trim();
-            System.out.println("Du valde " + productView.selectedProductName);
+            System.out.print("Välj storlek: ");
+            int selectedSize = scanner.nextInt();
 
+            //Kontrollera att vald item finns (ItemId)
+            Item selectedItem = null;
+            for (Item item : itemList) {
+                if (item.getColour().equalsIgnoreCase(selectedColour) && item.getSize() == selectedSize) {
+                    selectedItem = item;
+                    break;
+                }
+            }
+
+            if (selectedItem != null) {
+                itemId = selectedItem.getId(); // Id för item
+                Orders order = r.checkIfActiveOrderId(customerId);
+                rc.AddToCart(customerId, order, productId, itemId);
+            } else {
+                System.out.println("Den valda item hittades inte!");
+
+            }
         }
-   }
+
+    public void CartItemsView(int customerId) {
+        List<CartItem> items = rc.getCartItems(customerId);
+
+        if (items.isEmpty()) {
+            System.out.println("Inga produkter hittades i varukorgen för kund ID: " + customerId);
+            return;
+        }
+
+        System.out.println("\n--- Varukorg för CustomerId: " + customerId + " ---");
+        System.out.printf("%-8s %-10s %-15s %-10s %-10s %-10s %-8s %-8s\n",
+                "OrderID", "Customer", "Product", "Size", "Colour", "Status", "ItemID", "Quantity");
+        System.out.println("------------------------------------------------------------------------");
+
+        for (CartItem item : items) {
+            System.out.printf("%-8d %-10s %-15s %-10d %-10s %-10s %-8d %-8d\n",
+                    item.getOrderId(), item.getCustomer(), item.getProduct(),
+                    item.getSize(), item.getColour(), item.getStatus(),
+                    item.getItemId(), item.getQuantity());
+        }
+    }
+}
 
