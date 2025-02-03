@@ -1,5 +1,6 @@
 import models.*;
 
+import java.awt.*;
 import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Scanner;
@@ -19,8 +20,10 @@ public class ViewManager {
 
         public void Meny(){
             System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Betala \n4.Logga ut" +
-                    "\n Välj ett alternativ:");
+                    "\nVälj ett alternativ:");
             int choice = scanner.nextInt();
+            scanner.nextLine();
+
             switch (choice) {
                 case 1: ProductView();
                     break;
@@ -48,10 +51,11 @@ public class ViewManager {
         if (customer != null) {
             customerId = customer.getId(); // TODO: Spara inloggad kunds ID
             System.out.println("Välkommen " + customer.getFirstName() + "!");
-            ProductView();
+            Meny();
         }
         else {
             System.out.println("Felaktigt användarnamn eller lösenord!");
+            LoginView();
         }
     }
 
@@ -125,8 +129,11 @@ public class ViewManager {
                 itemId = selectedItem.getId(); // Id för item
                 Orders order = r.checkIfActiveOrderId(customerId);
                 rc.AddToCart(customerId, order, productId, itemId);
+                Meny();
+
             } else {
                 System.out.println("Den valda item hittades inte!");
+                Meny();
 
             }
         }
