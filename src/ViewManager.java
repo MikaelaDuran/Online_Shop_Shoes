@@ -24,6 +24,7 @@ public class ViewManager {
 
             switch (choice) {
                 case 1: ProductView();
+                        Meny();
                     break;
                 case 2: CartItemsView(customerId);
                         Meny();
@@ -117,8 +118,22 @@ public class ViewManager {
             System.out.println("-------------------------------------------------------------");
             System.out.print("Välj färg: ");
             String selectedColour = scanner.nextLine().trim();
-            System.out.print("Välj storlek: ");
-            int selectedSize = scanner.nextInt();
+
+
+            int selectedSize = -1; // För att spara användarens valda storlek
+
+            // Detta för att inte programmet ska krasha om man skriver annat än en siffra
+            while (true) {
+                System.out.print("Välj storlek: ");
+                if (scanner.hasNextInt()) {
+                    selectedSize = scanner.nextInt();
+                    scanner.nextLine();
+                    break;
+                } else {
+                    System.out.println("Felaktig inmatning! Välj storlek:");
+                    scanner.nextLine();
+                }
+            }
 
             //Kontrollera att vald item finns (ItemId)
             Item selectedItem = null;
