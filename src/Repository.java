@@ -158,6 +158,27 @@ public class Repository {
             return null; // Om ingen order hittades, returnera null
         }
 
+    public void pay(int orderId, int customerId) {
+        String query = "{ CALL PAY(?, ?) }";
+
+        try (Connection con = DriverManager.getConnection(
+                p.getProperty("connection"),
+                p.getProperty("username"),
+                p.getProperty("password"));
+             CallableStatement stmt = con.prepareCall(query)) {
+
+            stmt.setInt(1, customerId);
+            stmt.setInt(2, orderId);
+
+            stmt.execute();
+
+            System.out.println("Order ID: " + orderId + " har betalats!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Kunde inte betala ordern!");
+        }
+    }
 }
 
 

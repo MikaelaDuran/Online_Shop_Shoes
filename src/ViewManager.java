@@ -1,7 +1,5 @@
 import models.*;
 
-import java.awt.*;
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,7 +17,7 @@ public class ViewManager {
 
 
         public void Meny(){
-            System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Betala \n4.Logga ut" +
+            System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Ta bort vara \n4.Betala \n5.Logga ut" +
                     "\nVälj ett alternativ:");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -28,13 +26,19 @@ public class ViewManager {
                 case 1: ProductView();
                     break;
                 case 2: CartItemsView(customerId);
+                        Meny();
                     break;
                 case 3:
-                    System.out.println("BETALA");
+                    System.out.println("TA BORT VARA");
                     break;
                 case 4:
-                    System.out.println("LOGGA UT");
+                    payView(customerId);
                     break;
+                case 5:
+                    logout();
+                    return;
+                default:
+                    System.out.println("Felaktigt val, försök igen.");
             }
         }
         public void LoginView(){
@@ -138,6 +142,7 @@ public class ViewManager {
             }
         }
 
+
     public void CartItemsView(int customerId) {
         List<CartItem> items = rc.getCartItems(customerId);
 
@@ -146,7 +151,7 @@ public class ViewManager {
             return;
         }
 
-        System.out.println("\n--- Varukorg för CustomerId: " + customerId + " ---");
+        System.out.println("\n--- Varukorg ---");
         System.out.printf("%-8s %-10s %-15s %-10s %-10s %-10s %-8s %-8s\n",
                 "OrderID", "Customer", "Product", "Size", "Colour", "Status", "ItemID", "Quantity");
         System.out.println("------------------------------------------------------------------------");
@@ -157,6 +162,48 @@ public class ViewManager {
                     item.getSize(), item.getColour(), item.getStatus(),
                     item.getItemId(), item.getQuantity());
         }
+        System.out.println("------------------------------------------------------------------------");
+
     }
+
+    public void payView(int customerId) {
+        Orders order = r.checkIfActiveOrderId(customerId);
+
+        if (order == null) {
+            System.out.println("Ingen aktiv order att betala.");
+            Meny();
+            return;
+        }
+
+        int orderId = order.getId();
+
+        CartItemsView(customerId);
+
+        System.out.println("Vill du betala ordern? (j/n)");
+        String input = scanner.nextLine().toLowerCase().trim();
+
+        if (input.equals("j")) {
+            r.pay(orderId, customerId);
+        } else {
+            System.out.println("Ordern är inte betald.");
+        }
+
+        Meny();
+    }
+
+    public void logout() {
+        System.out.println("LOGGA UT");
+
+        customerId = 0;
+        itemId = 0;
+        orderId = 0;
+        productId = 0;
+
+        System.out.println("Du har loggats ut.");
+
+        LoginView();
+    }
+
+
 }
 
