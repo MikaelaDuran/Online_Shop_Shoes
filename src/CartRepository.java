@@ -26,7 +26,7 @@ public class CartRepository {
         Integer orderId = (order != null) ? order.getId() : null;
         int newOrderId = 0;
 
-        String query = "{ CALL AddToCart(?, ?, ?, ?, ?) }";
+        String query = "{ CALL AddToCart(?, ?, ?, ?) }";
 
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connection"),
@@ -44,16 +44,8 @@ public class CartRepository {
 
             stmt.setInt(3, produktId);
             stmt.setInt(4, itemId);
-
-            // OUT-parameter för orderId
-            stmt.registerOutParameter(5, Types.INTEGER);
-
-            // Kör proceduren
             stmt.execute();
 
-            // Hämta det returnerade orderId
-            newOrderId = stmt.getInt(5);
-            System.out.println("Order ID: " + newOrderId + ". Produkten har lagts till!");
 
 
         } catch (SQLException e) {

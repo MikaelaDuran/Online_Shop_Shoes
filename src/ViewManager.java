@@ -19,8 +19,18 @@ public class ViewManager {
         public void Meny(){
             System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Ta bort vara \n4.Betala \n5.Logga ut" +
                     "\nVälj ett alternativ:");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice;
+
+            while (true) {
+                if (scanner.hasNextInt()) {
+                   choice = scanner.nextInt();
+                    scanner.nextLine();
+                    break;
+                } else {
+                    System.out.println("Felaktig inmatning! Försök igen:");
+                    scanner.nextLine();
+                }
+            }
 
             switch (choice) {
                 case 1: ProductView();
@@ -122,7 +132,7 @@ public class ViewManager {
 
             int selectedSize = -1; // För att spara användarens valda storlek
 
-            // Detta för att inte programmet ska krasha om man skriver annat än en siffra
+            // Detta för att inte programmet ska krascha om man skriver annat än en siffra
             while (true) {
                 System.out.print("Välj storlek: ");
                 if (scanner.hasNextInt()) {
