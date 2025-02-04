@@ -147,6 +147,7 @@ public class ViewManager {
 
             //Kontrollera att vald item finns (ItemId)
             Item selectedItem = null;
+
             for (Item item : itemList) {
                 if (item.getColour().equalsIgnoreCase(selectedColour) && item.getSize() == selectedSize) {
                     selectedItem = item;

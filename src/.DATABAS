@@ -132,12 +132,17 @@ update customer set userName = 'svka', password = '888' where id = 8;
 DROP PROCEDURE IF EXISTS AddToCart;
 
 DELIMITER //
-CREATE PROCEDURE AddToCart(IN kundid INT, IN OrderID INT,  IN produktid INT,  IN itemID INT,  OUT newOrderID INT
-)
+CREATE PROCEDURE AddToCart(IN kundid INT, IN OrderID INT,  IN produktid INT,  IN itemID INT)
 BEGIN
     DECLARE tempOrderID INT;
 
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL SET MESSAGE_TEXT = 'Ett oväntat fel inträffade';
+    END;
+
+      DECLARE CONTINUE HANDLER FOR SQLWARNING
     BEGIN
         ROLLBACK;
         RESIGNAL SET MESSAGE_TEXT = 'Ett oväntat fel inträffade';
@@ -174,9 +179,6 @@ BEGIN
     UPDATE Item SET stock = stock - 1 WHERE id = itemID AND stock > 0;
 
     COMMIT;
-
-    -- Returnera orderId
-    SET newOrderID = tempOrderID;
 END //
 DELIMITER ;
 

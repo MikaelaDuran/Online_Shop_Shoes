@@ -49,8 +49,10 @@ public class CartRepository {
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
+
+            System.out.println("SQLException: " + e.getMessage());
             System.out.println("Kunde inte lägga till i varukorgen!");
+            e.printStackTrace();
 
         }
 
