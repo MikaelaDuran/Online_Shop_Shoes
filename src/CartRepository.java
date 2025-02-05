@@ -50,9 +50,8 @@ public class CartRepository {
 
         } catch (SQLException e) {
 
-            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLException: " + e.getMessage() + " " + e.getErrorCode());
             System.out.println("Kunde inte lägga till i varukorgen!");
-            e.printStackTrace();
 
         }
 
@@ -60,7 +59,7 @@ public class CartRepository {
     }
 
     public List<CartItem> getCartItems(int customerId) {
-        String query = "SELECT * FROM CartView WHERE CustomerId = ?";
+        String query = "SELECT * FROM CartView WHERE CustomerId = ?"; //Skapat en view i databasen
         List<CartItem> cartItems = new ArrayList<>();
 
         try (Connection con = DriverManager.getConnection(
@@ -88,7 +87,6 @@ public class CartRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.println("Kunde inte hämta varukorgen!");
         }
 

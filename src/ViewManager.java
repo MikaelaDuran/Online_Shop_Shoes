@@ -17,7 +17,7 @@ public class ViewManager {
 
 
         public void Meny(){
-            System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Ta bort vara \n4.Betala \n5.Logga ut" +
+            System.out.println("Meny \n1.Produkter \n2.Varukorg \n3.Betala \n4.Logga ut" +
                     "\nVälj ett alternativ:");
             int choice;
 
@@ -40,12 +40,9 @@ public class ViewManager {
                         Meny();
                     break;
                 case 3:
-                    System.out.println("TA BORT VARA");
-                    break;
-                case 4:
                     payView(customerId);
                     break;
-                case 5:
+                case 4:
                     logout();
                     return;
                 default:
@@ -61,10 +58,10 @@ public class ViewManager {
         System.out.print("Lösenord: ");
         String passwordInput = scanner.nextLine().trim();
 
-        Customer customer = r.authenticateCustomer(usernameInput, passwordInput);
+        Customer customer = r.authenticateCustomer(usernameInput, passwordInput); //Anropar metod i repository
 
         if (customer != null) {
-            customerId = customer.getId(); // TODO: Spara inloggad kunds ID
+            customerId = customer.getId(); // Sparar inloggad kunds ID
             System.out.println("Välkommen " + customer.getFirstName() + "!");
             Meny();
         }
@@ -75,7 +72,7 @@ public class ViewManager {
     }
 
         public void ProductView(){
-        List<Product> products = r.getProducts();
+        List<Product> products = r.getProducts(); //Anropar metod från repository
 
         if(products.isEmpty()){
             System.out.println("Inga produkter finns tillgängliga!");
@@ -114,7 +111,7 @@ public class ViewManager {
 
         public void ItemView(int productId){
 
-        List<Item> itemList = r.getItemInStock(productId);
+        List<Item> itemList = r.getItemInStock(productId); //Anropar metod från repository
 
             System.out.println("\n-------------------------------------------------------------");
             System.out.printf("| %-20s | %-15s | %-10s |\n", "Storlek", "Färg", "Lager");
@@ -157,8 +154,8 @@ public class ViewManager {
 
             if (selectedItem != null) {
                 itemId = selectedItem.getId(); // Id för item
-                Orders order = r.checkIfActiveOrderId(customerId);
-                rc.AddToCart(customerId, order, productId, itemId);
+                Orders order = r.checkIfActiveOrderId(customerId); //Har kunden en aktiv order eller ej annars skapas ny
+                rc.AddToCart(customerId, order, productId, itemId); //Lägg till i varukorg
                 Meny();
 
             } else {
@@ -170,7 +167,7 @@ public class ViewManager {
 
 
     public void CartItemsView(int customerId) {
-        List<CartItem> items = rc.getCartItems(customerId);
+        List<CartItem> items = rc.getCartItems(customerId); //Anropar metod från Cart Repository
 
         if (items.isEmpty()) {
             System.out.println("Inga produkter hittades i varukorgen för kund ID: " + customerId);
