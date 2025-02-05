@@ -206,7 +206,6 @@ INNER JOIN product ON item.productID = product.id
 WHERE orders.orderStatus = 'active';
 
 
-SELECT * FROM CartView WHERE CustomerId = 5;
 
 DROP PROCEDURE IF EXISTS PAY
 DELIMITER //
@@ -251,3 +250,5 @@ END;
 DELIMITER ;
 
 SELECT * FROM OutOfStock;
+
+SELECT * FROM CartView WHERE CustomerId = 3;

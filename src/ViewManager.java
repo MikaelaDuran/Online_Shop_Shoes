@@ -170,7 +170,7 @@ public class ViewManager {
         List<CartItem> items = rc.getCartItems(customerId); //Anropar metod från Cart Repository
 
         if (items.isEmpty()) {
-            System.out.println("Inga produkter hittades i varukorgen för kund ID: " + customerId);
+            System.out.println("Inga produkter hittades i varukorgen");
             return;
         }
 
